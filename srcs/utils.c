@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 19:18:36 by ankammer          #+#    #+#             */
-/*   Updated: 2024/08/06 19:21:29 by ankammer         ###   ########.fr       */
+/*   Updated: 2024/08/07 18:18:02 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,18 +19,23 @@ void	data_init(t_data *data)
 	data->first_child = 0;
 	data->second_child = 0;
 	data->status = 0;
+	data->infile = 0;
+	data->outfile = 0;
+	data->split_env = NULL;
 }
 
-int	check_env(char **env)
+int	check_envp(char **envp, char **argv)
 {
 	int	i;
 
 	i = 0;
-	if (!env[i])
+	if (argv[2][0] == '/' && argv[3][0] == '/')
+		return (1);
+	else if (!envp[i] || !envp)
 		return (0);
-	while (env[i] && ft_strnstr(env[i], "PATH", 4) == NULL)
+	while (envp[i] && ft_strnstr(envp[i], "PATH", 4) == NULL)
 		i++;
-	if (!env[i])
+	if (!envp[i])
 		return (0);
 	else
 		return (1);
@@ -57,4 +62,15 @@ void	ft_error(t_data *data, char *message, int argc, int exit_code)
 			close(data->fd[1]);
 	}
 	exit(exit_code);
+}
+
+int	check_path_env(int *index, char **envp)
+{
+	while (ft_strnstr(envp[*index], "PATH", 4) == NULL)
+	{
+		if (!envp[*index + 1])
+			return (0);
+		(*index)++;
+	}
+	return (1);
 }

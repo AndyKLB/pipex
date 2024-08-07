@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/29 15:17:32 by ankammer          #+#    #+#             */
-/*   Updated: 2024/08/06 19:20:50 by ankammer         ###   ########.fr       */
+/*   Updated: 2024/08/07 16:52:41 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,35 +61,36 @@ int	path_error(char *path, char **cmd_split, char **split_env)
 	exit(error_code);
 }
 
-char	*get_path(char **envp, char **cmd_split)
+char	*get_path(char **envp, char **cmd_split, t_data *data)
 {
 	int		i;
-	char	**split_env;
 	char	*path;
 	char	*half_path;
 
+	if ((!envp || !envp[0]) && !access(cmd_split[0], F_OK | X_OK))
+		return (cmd_split[0]);
 	half_path = NULL;
 	i = 0;
-	while (ft_strnstr(envp[i], "PATH", 4) == NULL)
-		i++;
-	split_env = ft_split(envp[i] + 5, ':');
+	if (!check_path_env(&i, envp))
+		return (cmd_split[0]);
+	data->split_env = ft_split(envp[i] + 5, ':');
 	i = -1;
-	while (split_env[++i])
+	while (data->split_env[++i])
 	{
-		path = path_join(half_path, path, split_env[i], cmd_split[0]);
+		path = path_join(half_path, path, data->split_env[i], cmd_split[0]);
 		if (!access(path, F_OK | X_OK))
-			return (free_tab(split_env), path);
+			return (free_tab(data->split_env), path);
 		else if (!access(cmd_split[0], F_OK | X_OK))
-			return (free_tab(split_env), cmd_split[0]);
-		if (!split_env[i + 1])
-			path_error(path, cmd_split, split_env);
+			return (free_tab(data->split_env), cmd_split[0]);
+		if (!data->split_env[i + 1])
+			path_error(path, cmd_split, data->split_env);
 		free(path);
 		path = NULL;
 	}
 	return (NULL);
 }
 
-void	exec_process(char *cmd_argv, char **envp)
+void	exec_process(char *cmd_argv, char **envp, t_data *data)
 {
 	char	**cmd_split;
 	char	*path;
@@ -97,7 +98,7 @@ void	exec_process(char *cmd_argv, char **envp)
 	path = NULL;
 	cmd_split = ft_split(cmd_argv, ' ');
 	if (cmd_split)
-		path = get_path(envp, cmd_split);
+		path = get_path(envp, cmd_split, data);
 	if (!path)
 		free_tab(cmd_split);
 	if (!cmd_split || execve(path, cmd_split, envp) == -1)

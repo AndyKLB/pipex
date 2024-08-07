@@ -6,71 +6,45 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 17:28:50 by ankammer          #+#    #+#             */
-/*   Updated: 2024/08/06 19:21:13 by ankammer         ###   ########.fr       */
+/*   Updated: 2024/08/07 18:00:39 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../header/pipex.h"
 
-void	second_child_process(t_data *data, char **argv, char **env)
+void	second_child_process(t_data *data, char **argv, char **envp)
 {
-	int	outfile;
-
-	outfile = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	if (outfile == -1)
-		ft_error(data, 0, 5, outfile);
+	data->outfile = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (data->outfile == -1)
+		ft_error(data, "Permission denied", 5, 1);
 	close(data->fd[1]);
 	dup2(data->fd[0], STDIN_FILENO);
-	dup2(outfile, STDOUT_FILENO);
+	dup2(data->outfile, STDOUT_FILENO);
 	close(data->fd[0]);
-	close(outfile);
-	exec_process(argv[3], env);
+	close(data->outfile);
+	exec_process(argv[3], envp, data);
 }
 
-void	child_process(t_data *data, char **argv, char **env)
+void	child_process(t_data *data, char **argv, char **envp)
 {
-	int	infile;
-
-	infile = open(argv[1], O_RDONLY, 0644);
-	if (infile == -1)
-		ft_error(data, 0, 5, infile);
+	data->infile = open(argv[1], O_RDONLY, 0644);
+	if (data->infile == -1)
+		ft_error(data, "Permission denied", 5, 0);
 	close(data->fd[0]);
-	dup2(infile, STDIN_FILENO);
+	dup2(data->infile, STDIN_FILENO);
 	dup2(data->fd[1], STDOUT_FILENO);
 	close(data->fd[1]);
-	close(infile);
-	exec_process(argv[2], env);
+	close(data->infile);
+	exec_process(argv[2], envp, data);
 }
 
-// void	print_status(int status)
-// {
-// 	if (WIFEXITED(status))
-// 	{
-// 		printf("\nProcess exited with status %d\n", WEXITSTATUS(status));
-// 	}
-// 	else if (WIFSIGNALED(status))
-// 	{
-// 		printf("\nProcess exited with status %d\n", WEXITSTATUS(status));
-// 		printf("\n\nProcess killed by signal %d\n", WTERMSIG(status));
-// 	}
-// 	else if (WIFSTOPPED(status))
-// 	{
-// 		printf("\n\nProcess stopped by signal %d\n", WSTOPSIG(status));
-// 	}
-// 	else
-// 	{
-// 		printf("\nUnknown process status\n");
-// 	}
-// }
-
-int	main(int argc, char **argv, char **env)
+int	main(int argc, char **argv, char **envp)
 {
 	t_data	data;
 
 	data_init(&data);
 	data.second_child = 0;
-	if (argc == 5 && (check_env(env) || (!check_env(env) && argv[2][0] == '/'
-			&& argv[3][0] == '/')))
+	if (argc == 5 && (check_envp(envp, argv)))
 	{
 		if ((pipe(data.fd)) == -1)
 			ft_error(&data, "pipe error", argc, EXIT_FAILURE);
@@ -80,13 +54,13 @@ int	main(int argc, char **argv, char **env)
 		if (data.first_child == -1 || data.second_child == -1)
 			ft_error(&data, "fork error", argc, EXIT_FAILURE);
 		else if (data.first_child == 0)
-			child_process(&data, argv, env);
+			child_process(&data, argv, envp);
 		else if (data.second_child == 0)
-			second_child_process(&data, argv, env);
+			second_child_process(&data, argv, envp);
 		close(data.fd[0]);
 		close(data.fd[1]);
-		while (wait(&data.status) > 0)
-			;
+		wait(NULL);
+		wait(NULL);
 	}
 	else
 		ft_error(&data, NULL, argc, 127);
