@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 17:29:52 by ankammer          #+#    #+#             */
-/*   Updated: 2024/08/07 16:48:44 by ankammer         ###   ########.fr       */
+/*   Updated: 2024/08/11 14:11:59 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ typedef struct s_data
 	int		outfile;
 	pid_t	first_child;
 	pid_t	second_child;
-	char	**split_env;
+	char	**split_path;
 }			t_data;
 int			check_envp(char **envp, char **argv);
 void		ft_putstr_fd(char *s, int fd);

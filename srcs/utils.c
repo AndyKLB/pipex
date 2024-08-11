@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 19:18:36 by ankammer          #+#    #+#             */
-/*   Updated: 2024/08/07 18:18:02 by ankammer         ###   ########.fr       */
+/*   Updated: 2024/08/11 14:12:32 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ void	data_init(t_data *data)
 	data->status = 0;
 	data->infile = 0;
 	data->outfile = 0;
-	data->split_env = NULL;
+	data->split_path = NULL;
 }
 
 int	check_envp(char **envp, char **argv)

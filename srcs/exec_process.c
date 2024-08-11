@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/29 15:17:32 by ankammer          #+#    #+#             */
-/*   Updated: 2024/08/07 16:52:41 by ankammer         ###   ########.fr       */
+/*   Updated: 2024/08/11 15:15:12 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,15 +34,15 @@ int	error_code_ret(int error_code, char **cmd_split)
 		{
 			if (access(cmd_split[0], X_OK))
 			{
-				ft_putstr_fd("Permission denied", 2);
+				perror("Permission denied");
 				error_code = 126;
 			}
 		}
 		else
-			ft_putstr_fd("Command not found", 2);
+			perror("Command not found");
 	}
 	else
-		ft_putstr_fd("No such file or directory", 2);
+		perror("No such file or directory");
 	return (error_code);
 }
 
@@ -73,17 +73,17 @@ char	*get_path(char **envp, char **cmd_split, t_data *data)
 	i = 0;
 	if (!check_path_env(&i, envp))
 		return (cmd_split[0]);
-	data->split_env = ft_split(envp[i] + 5, ':');
+	data->split_path = ft_split(envp[i] + 5, ':');
 	i = -1;
-	while (data->split_env[++i])
+	while (data->split_path[++i])
 	{
-		path = path_join(half_path, path, data->split_env[i], cmd_split[0]);
+		path = path_join(half_path, path, data->split_path[i], cmd_split[0]);
 		if (!access(path, F_OK | X_OK))
-			return (free_tab(data->split_env), path);
+			return (free_tab(data->split_path), path);
 		else if (!access(cmd_split[0], F_OK | X_OK))
-			return (free_tab(data->split_env), cmd_split[0]);
-		if (!data->split_env[i + 1])
-			path_error(path, cmd_split, data->split_env);
+			return (free_tab(data->split_path), cmd_split[0]);
+		if (!data->split_path[i + 1])
+			path_error(path, cmd_split, data->split_path);
 		free(path);
 		path = NULL;
 	}
