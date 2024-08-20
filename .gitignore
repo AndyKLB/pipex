@@ -1,2 +1,4 @@
-pipex_tester/*
+pipex_tester
 *.sh
+*.o
+*.d
