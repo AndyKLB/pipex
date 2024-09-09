@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 19:18:36 by ankammer          #+#    #+#             */
-/*   Updated: 2024/08/20 17:05:53 by ankammer         ###   ########.fr       */
+/*   Updated: 2024/08/21 17:35:40 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void	data_init(t_data *data, char **argv)
 	data->infile = 0;
 	data->outfile = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (data->outfile == -1)
-		data->outfile_flag = 1;
+		perror("open error");
 	data->split_path = NULL;
 }
 
@@ -32,9 +32,9 @@ void	ft_error(t_data *data, char *message, int exit_code)
 		ft_putstr_fd(message, 2);
 	if (data)
 	{
-		if (data->infile)
+		if (data->infile >= 0)
 			close(data->infile);
-		if (data->outfile)
+		if (data->outfile >= 0)
 			close(data->outfile);
 		if (data->fd[0] >= 0)
 			close(data->fd[0]);

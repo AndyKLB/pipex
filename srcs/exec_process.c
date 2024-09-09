@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/29 15:17:32 by ankammer          #+#    #+#             */
-/*   Updated: 2024/08/20 14:01:18 by ankammer         ###   ########.fr       */
+/*   Updated: 2024/08/29 18:10:13 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,8 +68,7 @@ char	*get_path(char **envp, char **cmd_split, t_data *data)
 	char	*half_path;
 
 	i = 0;
-	if ((!envp || !envp[0] || !check_path_env(&i, envp))
-		&& !access(cmd_split[0], F_OK | X_OK))
+	if ((!envp || !envp[0] || !check_path_env(&i, envp)))
 		return (cmd_split[0]);
 	half_path = NULL;
 	data->split_path = ft_split(envp[i] + 5, ':');
@@ -89,7 +88,7 @@ char	*get_path(char **envp, char **cmd_split, t_data *data)
 	return (NULL);
 }
 
-void	exec_process(char *cmd_argv, char **envp, t_data *data)
+void	exec_process(char *cmd_argv, char **envp, t_data *data, int flag)
 {
 	char	**cmd_split;
 	char	*path;
@@ -100,6 +99,7 @@ void	exec_process(char *cmd_argv, char **envp, t_data *data)
 		path = get_path(envp, cmd_split, data);
 	if (!path)
 		free_tab(cmd_split);
-	if (!cmd_split || execve(path, cmd_split, envp) == -1)
+	if (!cmd_split || (data->outfile == -1 && flag == 1) || execve(path,
+			cmd_split, envp) == -1)
 		path_error(path, cmd_split, NULL);
 }

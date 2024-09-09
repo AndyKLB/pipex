@@ -16,10 +16,10 @@ DEP_FLAGS	:=	-MMD -MP
 SRCS_FILES = pipex.c exec_process.c utils.c \
 
 LIB_SRCS_FILES = ft_putstr_fd.c ft_split.c ft_strjoin.c \
-				ft_strncmp.c ft_strnstr.c \
+				ft_strncmp.c ft_strnstr.c ft_calloc.c\
 			
 
-BONUS_SRCS_FILES = pipex_bonus.c exec_process_bonus.c utils_bonus.c \
+BONUS_SRCS_FILES = pipex_bonus.c exec_process_bonus.c utils_bonus.c utils2_bonus.c\
 
 SRCS_DIR = ./srcs
 LIB_DIR = ./lib

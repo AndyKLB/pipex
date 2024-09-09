@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 17:28:50 by ankammer          #+#    #+#             */
-/*   Updated: 2024/08/20 17:40:59 by ankammer         ###   ########.fr       */
+/*   Updated: 2024/08/29 16:52:14 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,13 @@ void	second_child_process(t_data *data, char **argv, char **envp)
 {
 	close(data->fd[1]);
 	dup2(data->fd[0], STDIN_FILENO);
-	dup2(data->outfile, STDOUT_FILENO);
+	if (data->outfile >= 0)
+	{
+		dup2(data->outfile, STDOUT_FILENO);
+		close(data->outfile);
+	}
 	close(data->fd[0]);
-	close(data->outfile);
-	exec_process(argv[3], envp, data);
+	exec_process(argv[3], envp, data, 1);
 }
 
 void	child_process(t_data *data, char **argv, char **envp)
@@ -31,9 +34,10 @@ void	child_process(t_data *data, char **argv, char **envp)
 	dup2(data->infile, STDIN_FILENO);
 	dup2(data->fd[1], STDOUT_FILENO);
 	close(data->fd[1]);
-	close(data->outfile);
+	if (data->outfile >= 0)
+		close(data->outfile);
 	close(data->infile);
-	exec_process(argv[2], envp, data);
+	exec_process(argv[2], envp, data, 0);
 }
 
 void	end_process(t_data *data)
@@ -43,14 +47,15 @@ void	end_process(t_data *data)
 	code = EXIT_FAILURE;
 	close(data->fd[0]);
 	close(data->fd[1]);
-	close(data->outfile);
+	if (data->outfile >= 0)
+		close(data->outfile);
 	while (errno != ECHILD)
 		if (wait(&data->status) == data->second_child
 			&& WIFEXITED(data->status))
 			code = WEXITSTATUS(data->status);
 	if (data->second_child == -1)
 		exit(127);
-	else if (data->outfile_flag)
+	else if (data->outfile == -1)
 		ft_error(data, "Permission denied", 1);
 	exit(code);
 }

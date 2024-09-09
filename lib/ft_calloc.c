@@ -1,50 +1,38 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strjoin.c                                       :+:      :+:    :+:   */
+/*   ft_calloc.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/13 10:15:45 by ankammer          #+#    #+#             */
-/*   Updated: 2024/08/05 16:00:12 by ankammer         ###   ########.fr       */
+/*   Created: 2023/11/09 16:30:45 by ankammer          #+#    #+#             */
+/*   Updated: 2024/08/28 18:24:19 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../header/pipex.h"
 
-static size_t	ft_strlen(const char *s)
+void	ft_bzero(void *s, size_t n)
 {
 	size_t	i;
 
 	i = 0;
-	while (s[i])
+	while (i < n)
+	{
+		*(unsigned char *)(s + i) = 0;
 		i++;
-	return (i);
+	}
 }
 
-char	*ft_strjoin(char const *s1, char const *s2)
+void	*ft_calloc(size_t nmemb, size_t size)
 {
-	char	*new;
-	size_t	i;
-	size_t	j;
+	void	*new;
 
-	if (!s1 || !s2)
+	if (size != 0 && (nmemb > (size_t)-1 / size))
 		return (NULL);
-	new = malloc(sizeof(char) * (ft_strlen(s1) + ft_strlen(s2)) + 1);
+	new = malloc(size * nmemb);
 	if (!new)
 		return (NULL);
-	i = 0;
-	j = 0;
-	while (s1[i])
-	{
-		new[i] = s1[i];
-		i++;
-	}
-	while (s2[j])
-	{
-		new[i + j] = s2[j];
-		j++;
-	}
-	new[i + j] = '\0';
+	ft_bzero(new, nmemb * size);
 	return (new);
 }
